@@ -1,15 +1,15 @@
-# Data Preprocessing
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans, Birch
 from sklearn_extra.cluster import KMedoids
-from sklearn.metrics import silhouette_score, calinski_harabasz_score
+from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score
 from warnings import simplefilter
 
-# ignore all future warnings
+# Ignore all future warnings
 simplefilter(action='ignore', category=FutureWarning)
 
+# Load and preprocess the datasetc
 df = pd.read_csv('Mall_Customers_Preprocessed.csv')
 df.dropna(inplace=True)
 
@@ -18,7 +18,7 @@ X = df.iloc[:, [2,3]].values
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# Elbow method to find number of clusters
+# Elbow method to find the optimum number of clusters
 sumof_squared_distance = []
 for i in range(1, 12):
     kmeans = KMeans(n_clusters=i, random_state=42)
@@ -32,43 +32,49 @@ plt.savefig('elbow-results.png')
 plt.show()
 plt.clf()
 
-# Model Selection
+# Train KMeans, KMedoids and Birch model and predict clusters
 kmeans = KMeans(n_clusters=5, random_state=42)
-kmedoids = KMedoids(n_clusters=5, random_state=42)
-birch = Birch(threshold=0.01, n_clusters=5)
-
-# Model training and prediction
 y_kmeans = kmeans.fit_predict(X_scaled)
+kmedoids = KMedoids(n_clusters=5, random_state=42)
 y_kmedoids = kmedoids.fit_predict(X_scaled)
+birch = Birch(threshold=0.25, n_clusters=5)
 y_birch = birch.fit_predict(X_scaled)
 
-# Model Evaluation
+# Model Evaluation using Silhouette Score
 kmeans_silhouette = silhouette_score(X_scaled, kmeans.labels_)
 kmedoids_silhouette = silhouette_score(X_scaled, kmedoids.labels_)
 birch_silhouette = silhouette_score(X_scaled, birch.labels_)
 
-print("silhouette score for KMeans:")
+print("Silhouette Score for KMeans:")
 print(kmeans_silhouette)
-print("silhouette score for KMedoids:")
+print("Silhouette Score for KMedoids:")
 print(kmedoids_silhouette)
-print("silhouette score for Birch:")
+print("Silhouette Score for Birch:")
 print(birch_silhouette)
 
+# Model Evaluation using Calinski-Harabasz Index
 kmeans_calinski_harabasz = calinski_harabasz_score(X_scaled, kmeans.labels_)
 kmedoids_calinski_harabasz = calinski_harabasz_score(X_scaled, kmedoids.labels_)
 birch_calinski_harabasz = calinski_harabasz_score(X_scaled, birch.labels_)
 
-print("calinski harabasz for KMeans:")
+print("Calinski-Harabasz Index for KMeans:")
 print(kmeans_calinski_harabasz)
-print("calinski harabasz for KMedoids:")
+print("Calinski-Harabasz Index for KMedoids:")
 print(kmedoids_calinski_harabasz)
-print("calinski harabasz for Birch:")
+print("Calinski-Harabasz Index for Birch:")
 print(birch_calinski_harabasz)
 
-# Customer Segmentation
-df['kmeans_cluster'] = kmeans.labels_
-df['kmedoids_cluster'] = kmedoids.labels_
-df['birch_cluster'] = birch.labels_
+# Model evaluation using Davies-Bouldin Index
+kmeans_davies_bouldin_score = davies_bouldin_score(X_scaled, kmeans.labels_)
+kmedoids_davies_bouldin_score = davies_bouldin_score(X_scaled, kmedoids.labels_)
+birch_davies_bouldin_score = davies_bouldin_score(X_scaled, birch.labels_)
+
+print("Davies-Bouldin Index for KMeans:")
+print(kmeans_davies_bouldin_score)
+print("Davies-Bouldin Index for KMedoids:")
+print(kmedoids_davies_bouldin_score)
+print("Davies-Bouldin Index for Birch:")
+print(birch_davies_bouldin_score)
 
 # Visualize clusters
 # KMeans
@@ -84,6 +90,42 @@ plt.ylabel('Income')
 plt.plot
 plt.savefig('kmeansplot.png')
 plt.show()
+plt.clf()
+
+# KMedoids
+plt.scatter(X_scaled[y_kmedoids == 0,0], X_scaled[y_kmedoids == 0,1], c='brown', label='Cluster 1')
+plt.scatter(X_scaled[y_kmedoids == 1,0], X_scaled[y_kmedoids == 1,1], c='blue', label='Cluster 2')
+plt.scatter(X_scaled[y_kmedoids == 2,0], X_scaled[y_kmedoids == 2,1], c='green', label='Cluster 3')
+plt.scatter(X_scaled[y_kmedoids == 3,0], X_scaled[y_kmedoids == 3,1], c='cyan', label='Cluster 4')
+plt.scatter(X_scaled[y_kmedoids == 4,0], X_scaled[y_kmedoids == 4,1], c='magenta', label='Cluster 5')
+plt.scatter(kmedoids.cluster_centers_[:,0], kmedoids.cluster_centers_[:,1], c='red')
+plt.title('KMedoids Clustering')
+plt.xlabel('Spending Score')
+plt.ylabel('Income')
+plt.plot
+plt.savefig('kmedoidsplot.png')
+plt.show()
+plt.clf()
+
+# Birch
+plt.scatter(X_scaled[y_birch == 0,0], X_scaled[y_birch == 0,1], c='brown')
+plt.scatter(X_scaled[y_birch == 1,0], X_scaled[y_birch == 1,1], c='blue')
+plt.scatter(X_scaled[y_birch == 2,0], X_scaled[y_birch == 2,1], c='green')
+plt.scatter(X_scaled[y_birch == 3,0], X_scaled[y_birch == 3,1], c='cyan')
+plt.scatter(X_scaled[y_birch == 4,0], X_scaled[y_birch == 4,1], c='magenta')
+plt.scatter(birch.subcluster_centers_[:,0], birch.subcluster_centers_[:,1], c='red')
+plt.title('Birch Clustering')
+plt.xlabel('Spending Score')
+plt.ylabel('Income')
+plt.plot
+plt.savefig('birchplot.png')
+plt.show()
+plt.clf()
+
+# Customer Segmentation
+df['kmeans_cluster'] = kmeans.labels_
+df['kmedoids_cluster'] = kmedoids.labels_
+df['birch_cluster'] = birch.labels_
 
 # Marketing Strategy
 # KMeans Segments
