@@ -18,24 +18,38 @@ X = df.iloc[:, [2,3]].values
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# Elbow method to find the optimum number of clusters
-sumof_squared_distance = []
+# Elbow method to find the optimal number of clusters for k-means
+ssd_kmeans = []
 for i in range(1, 12):
     kmeans = KMeans(n_clusters=i, random_state=42)
     kmeans.fit(X_scaled)
-    sumof_squared_distance.append(kmeans.inertia_)
-plt.plot(range(1,12), sumof_squared_distance)
-plt.title('Elbow Method')
+    ssd_kmeans.append(kmeans.inertia_)
+plt.plot(range(1,12), ssd_kmeans)
+plt.title('Elbow Method for Optimal k (KMeans)')
 plt.xlabel('Number of Clusters')
 plt.ylabel('Sum of squared distance')
-plt.savefig('elbow-results.png')
+plt.savefig('elbow-results-kmeans.png')
 plt.show()
 plt.clf()
 
-# Train KMeans, KMedoids and Birch model and predict clusters
+# Elbow method to find the optimal number of clusters for k-medoids
+ssd_kmedoids = []
+for k in range(1, 12):
+    kmedoids = KMedoids(n_clusters=k, random_state=42)
+    kmedoids.fit(X_scaled)
+    ssd_kmedoids.append(kmedoids.inertia_)
+plt.plot(range(1, 12), ssd_kmedoids, marker='o')
+plt.title('Elbow Method for Optimal k (KMedoids)')
+plt.xlabel('Number of Clusters')
+plt.ylabel('Sum of squared distance')
+plt.savefig('elbow-results-kmedoids.png')
+plt.show()
+plt.clf()
+
+# Apply k-means, k-medoids, and birch model and predict clusters
 kmeans = KMeans(n_clusters=5, random_state=42)
 y_kmeans = kmeans.fit_predict(X_scaled)
-kmedoids = KMedoids(n_clusters=5, random_state=42)
+kmedoids = KMedoids(n_clusters=7, random_state=42)
 y_kmedoids = kmedoids.fit_predict(X_scaled)
 birch = Birch(threshold=0.25, n_clusters=5)
 y_birch = birch.fit_predict(X_scaled)
