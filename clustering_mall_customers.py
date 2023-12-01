@@ -5,26 +5,27 @@ from sklearn.cluster import KMeans, Birch
 from sklearn_extra.cluster import KMedoids
 from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score
 from warnings import simplefilter
+from scipy.cluster.hierarchy import dendrogram, linkage
 
 # Ignore all future warnings
 simplefilter(action='ignore', category=FutureWarning)
 
-# Load and preprocess the datasetc
+# Load and preprocess the dataset
 df = pd.read_csv('Mall_Customers_Preprocessed.csv')
 df.dropna(inplace=True)
 
-# Select relevant features and scale data
+# Select relevant features and standardize them
 X = df.iloc[:, [2,3]].values
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
 # Elbow method to find the optimal number of clusters for k-means
-ssd_kmeans = []
+wcss_kmeans = []
 for i in range(1, 12):
     kmeans = KMeans(n_clusters=i, random_state=42)
     kmeans.fit(X_scaled)
-    ssd_kmeans.append(kmeans.inertia_)
-plt.plot(range(1,12), ssd_kmeans)
+    wcss_kmeans.append(kmeans.inertia_)
+plt.plot(range(1,12), wcss_kmeans)
 plt.title('Elbow Method for Optimal k (KMeans)')
 plt.xlabel('Number of Clusters')
 plt.ylabel('Sum of squared distance')
@@ -33,12 +34,12 @@ plt.show()
 plt.clf()
 
 # Elbow method to find the optimal number of clusters for k-medoids
-ssd_kmedoids = []
+wcss_kmedoids = []
 for k in range(1, 12):
     kmedoids = KMedoids(n_clusters=k, random_state=42)
     kmedoids.fit(X_scaled)
-    ssd_kmedoids.append(kmedoids.inertia_)
-plt.plot(range(1, 12), ssd_kmedoids, marker='o')
+    wcss_kmedoids.append(kmedoids.inertia_)
+plt.plot(range(1, 12), wcss_kmedoids, marker='o')
 plt.title('Elbow Method for Optimal k (KMedoids)')
 plt.xlabel('Number of Clusters')
 plt.ylabel('Sum of squared distance')
@@ -46,15 +47,33 @@ plt.savefig('elbow-results-kmedoids.png')
 plt.show()
 plt.clf()
 
-# Apply k-means, k-medoids, and birch model and predict clusters
+# Silhouette score to find the optimal number of clusters for k-medoids
+# Look for the value of k that maximizes the silhouette score.
+silhouette_scores = []
+for k in range(2,12):
+    kmedoids = KMedoids(n_clusters=k, random_state=42)
+    kmedoids.fit(X_scaled)
+    labels = kmedoids.labels_
+    silhouette_scores.append(silhouette_score(X_scaled, labels))
+
+plt.plot(range(2,12), silhouette_scores, marker='o')
+plt.title('Silhouette Score for K-Medoids Clustering')
+plt.xlabel('Number of Clusters (k)')
+plt.ylabel('Silhouette Score')
+plt.savefig('silhouette-scores-kmedoids')
+plt.show()
+plt.clf()
+
+# Apply k-means, k-medoids, and birch algorithm to perform clustering and return cluster labels
 kmeans = KMeans(n_clusters=5, random_state=42)
 y_kmeans = kmeans.fit_predict(X_scaled)
-kmedoids = KMedoids(n_clusters=7, random_state=42)
+kmedoids = KMedoids(n_clusters=4, random_state=42)
 y_kmedoids = kmedoids.fit_predict(X_scaled)
-birch = Birch(threshold=0.25, n_clusters=5)
-y_birch = birch.fit_predict(X_scaled)
+birch = Birch(threshold=0.15, n_clusters=None)
+birch.fit(X_scaled)
 
 # Model Evaluation using Silhouette Score
+# Measures how similar an object is to its own cluster compared to other clusters
 kmeans_silhouette = silhouette_score(X_scaled, kmeans.labels_)
 kmedoids_silhouette = silhouette_score(X_scaled, kmedoids.labels_)
 birch_silhouette = silhouette_score(X_scaled, birch.labels_)
@@ -67,6 +86,9 @@ print("Silhouette Score for Birch:")
 print(birch_silhouette)
 
 # Model Evaluation using Calinski-Harabasz Index
+# The index aims to capture the compactness of clusters and the separation between them
+# Higher values indicate better-defined and well-separated clusters.
+# Lower values may suggest that clusters are not well-separated or are too dispersed.
 kmeans_calinski_harabasz = calinski_harabasz_score(X_scaled, kmeans.labels_)
 kmedoids_calinski_harabasz = calinski_harabasz_score(X_scaled, kmedoids.labels_)
 birch_calinski_harabasz = calinski_harabasz_score(X_scaled, birch.labels_)
@@ -79,6 +101,9 @@ print("Calinski-Harabasz Index for Birch:")
 print(birch_calinski_harabasz)
 
 # Model evaluation using Davies-Bouldin Index
+# It measures the compactness and separation of clusters in a partitioned dataset
+# Lower values are preferable, indicating more cohesive and well-separated clusters.
+# Higher values suggest that clusters might be less compact or less well-separated
 kmeans_davies_bouldin_score = davies_bouldin_score(X_scaled, kmeans.labels_)
 kmedoids_davies_bouldin_score = davies_bouldin_score(X_scaled, kmedoids.labels_)
 birch_davies_bouldin_score = davies_bouldin_score(X_scaled, birch.labels_)
@@ -122,17 +147,18 @@ plt.show()
 plt.clf()
 
 # Birch
-plt.scatter(X_scaled[y_birch == 0,0], X_scaled[y_birch == 0,1], c='brown')
-plt.scatter(X_scaled[y_birch == 1,0], X_scaled[y_birch == 1,1], c='blue')
-plt.scatter(X_scaled[y_birch == 2,0], X_scaled[y_birch == 2,1], c='green')
-plt.scatter(X_scaled[y_birch == 3,0], X_scaled[y_birch == 3,1], c='cyan')
-plt.scatter(X_scaled[y_birch == 4,0], X_scaled[y_birch == 4,1], c='magenta')
-plt.scatter(birch.subcluster_centers_[:,0], birch.subcluster_centers_[:,1], c='red')
-plt.title('Birch Clustering')
-plt.xlabel('Spending Score')
-plt.ylabel('Income')
-plt.plot
-plt.savefig('birchplot.png')
+# Create linkage matrix for hierarchical clustering
+linkage_matrix = linkage(X_scaled, method='ward')
+
+# Plot dendrogram for BIRCH algorithm
+plt.figure(figsize=(10, 5))
+dendrogram(linkage_matrix, labels=birch.labels_)
+plt.title('Dendrogram for Birch Clustering')
+# X-axis represents the individual data points
+plt.xlabel('Data Points')
+# Height represents the dissimilarity or distance between the clusters.
+plt.ylabel('Distance')
+plt.savefig('birchdendrogram.png')
 plt.show()
 plt.clf()
 
@@ -154,7 +180,6 @@ kmedoids_segment_1 = df[df['kmedoids_cluster'] == 0]
 kmedoids_segment_2 = df[df['kmedoids_cluster'] == 1]
 kmedoids_segment_3 = df[df['kmedoids_cluster'] == 2]
 kmedoids_segment_4 = df[df['kmedoids_cluster'] == 3]
-kmedoids_segment_5 = df[df['kmedoids_cluster'] == 4]
 
 # BIRCH Segments
 birch_segment_1 = df[df['birch_cluster'] == 0]
@@ -182,8 +207,6 @@ print('kmedoids_segment_3:')
 print(kmedoids_segment_3)
 print('kmedoids_segment_4:')
 print(kmedoids_segment_4)
-print('kmedoids_segment_5:')
-print(kmedoids_segment_5)
 print('birch_segment_1:')
 print(birch_segment_1)
 print('birch_segment_2:')
