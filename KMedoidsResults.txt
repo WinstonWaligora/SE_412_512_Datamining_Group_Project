@@ -1,0 +1,41 @@
+3 Clusters
+Silhouette Score for KMedoids:
+0.3764433144862609
+Calinski-Harabasz Index for KMedoids:
+102.63534098762197
+Davies-Bouldin Index for KMedoids:
+0.8461891060888959
+
+4 Clusters
+Silhouette Score for KMedoids:
+0.49301598881553493
+Calinski-Harabasz Index for KMedoids:
+170.75573041522696
+Davies-Bouldin Index for KMedoids:
+0.7018924837800515
+
+5 Clusters
+Silhouette Score for KMedoids:
+0.44764405993975875
+Calinski-Harabasz Index for KMedoids:
+196.6086758845011
+Davies-Bouldin Index for KMedoids:
+0.7623431969854617
+
+6 Clusters
+Silhouette Score for KMedoids:
+0.1922570935003029
+Calinski-Harabasz Index for KMedoids:
+89.95153081460916
+Davies-Bouldin Index for KMedoids:
+1.0695353778196086
+
+7 Clusters
+Silhouette Score for KMedoids:
+0.4073144379987353
+Calinski-Harabasz Index for KMedoids:
+203.55854664506003
+Davies-Bouldin Index for KMedoids:
+0.6898971459383703
+
+
