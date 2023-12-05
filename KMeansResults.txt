@@ -1,0 +1,39 @@
+3 Cluster
+Silhouette Score for KMeans:
+0.46658474419000145
+Calinski-Harabasz Index for KMeans:
+151.3351212635948
+Davies-Bouldin Index for KMeans:
+0.716482156943549
+
+4 Clusters
+Silhouette Score for KMeans:
+0.4939069237513199
+Calinski-Harabasz Index for KMeans:
+174.59521459297633
+Davies-Bouldin Index for KMeans:
+0.7095564965521565
+
+5 Clusters
+Silhouette Score for KMeans:
+0.5546571631111091
+Calinski-Harabasz Index for KMeans:
+248.64932001536357
+Davies-Bouldin Index for KMeans:
+0.5722356162263352
+
+6 Clusters
+Silhouette Score for KMeans:
+0.5398800926790663
+Calinski-Harabasz Index for KMeans:
+243.08789485068303
+Davies-Bouldin Index for KMeans:
+0.6545674732339849
+
+7 Clusters
+Silhouette Score for KMeans:
+0.5281492781108291
+Calinski-Harabasz Index for KMeans:
+254.621179742776
+Davies-Bouldin Index for KMeans:
+0.7147841166477835

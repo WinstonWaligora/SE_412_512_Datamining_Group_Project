@@ -1,0 +1,40 @@
+0.75 threshold
+Silhouette Score for Birch:
+0.3948862158525685
+Calinski-Harabasz Index for Birch:
+164.7313730117291
+Davies-Bouldin Index for Birch:
+0.7842138111753102
+
+0.5 threshold
+Silhouette Score for Birch:
+0.4773820802546034
+Calinski-Harabasz Index for Birch:
+207.31778544572967
+Davies-Bouldin Index for Birch:
+0.7316316811458138
+
+0.25 threshold
+Silhouette Score for Birch:
+0.4039882470135986
+Calinski-Harabasz Index for Birch:
+288.83402638300754
+Davies-Bouldin Index for Birch:
+0.6334652691668773
+
+0.15 threshold
+Silhouette Score for Birch:
+0.40457748686955747
+Calinski-Harabasz Index for Birch:
+429.81346879519486
+Davies-Bouldin Index for Birch:
+0.5065778999059369
+
+0.05 threshold
+Silhouette Score for Birch:
+0.30008354737745174
+Calinski-Harabasz Index for Birch:
+1296.1892917661626
+Davies-Bouldin Index for Birch:
+0.25692253724337
+
