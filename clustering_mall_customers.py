@@ -69,7 +69,7 @@ kmeans = KMeans(n_clusters=5, random_state=42)
 y_kmeans = kmeans.fit_predict(X_scaled)
 kmedoids = KMedoids(n_clusters=4, random_state=42)
 y_kmedoids = kmedoids.fit_predict(X_scaled)
-birch = Birch(threshold=0.15, n_clusters=None)
+birch = Birch(threshold=0.5, n_clusters=None)
 birch.fit(X_scaled)
 
 # Model Evaluation using Silhouette Score
