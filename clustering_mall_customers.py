@@ -69,7 +69,7 @@ kmeans = KMeans(n_clusters=5, random_state=42)
 y_kmeans = kmeans.fit_predict(X_scaled)
 kmedoids = KMedoids(n_clusters=4, random_state=42)
 y_kmedoids = kmedoids.fit_predict(X_scaled)
-birch = Birch(threshold=0.15, n_clusters=None)
+birch = Birch(threshold=0.5, n_clusters=None)
 birch.fit(X_scaled)
 
 # Model Evaluation using Silhouette Score
@@ -124,8 +124,8 @@ plt.scatter(X_scaled[y_kmeans == 3,0], X_scaled[y_kmeans == 3,1], c='cyan', labe
 plt.scatter(X_scaled[y_kmeans == 4,0], X_scaled[y_kmeans == 4,1], c='magenta', label='Cluster 5')
 plt.scatter(kmeans.cluster_centers_[:,0], kmeans.cluster_centers_[:,1], c='red')
 plt.title('KMeans Clustering')
-plt.xlabel('Spending Score')
-plt.ylabel('Income')
+plt.xlabel('Income')
+plt.ylabel('Spending Score')
 plt.plot
 plt.savefig('kmeansplot.png')
 plt.show()
@@ -139,8 +139,8 @@ plt.scatter(X_scaled[y_kmedoids == 3,0], X_scaled[y_kmedoids == 3,1], c='cyan', 
 plt.scatter(X_scaled[y_kmedoids == 4,0], X_scaled[y_kmedoids == 4,1], c='magenta', label='Cluster 5')
 plt.scatter(kmedoids.cluster_centers_[:,0], kmedoids.cluster_centers_[:,1], c='red')
 plt.title('KMedoids Clustering')
-plt.xlabel('Spending Score')
-plt.ylabel('Income')
+plt.xlabel('Income')
+plt.ylabel('Spending Score')
 plt.plot
 plt.savefig('kmedoidsplot.png')
 plt.show()
