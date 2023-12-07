@@ -15,7 +15,7 @@ df = pd.read_csv('Mall_Customers_Preprocessed.csv')
 df.dropna(inplace=True)
 
 # Select relevant features and standardize them
-X = df.iloc[:, [2,3]].values
+X = df.iloc[:, 2:4].values
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
@@ -67,9 +67,9 @@ plt.clf()
 # Apply k-means, k-medoids, and birch algorithm to perform clustering and return cluster labels
 kmeans = KMeans(n_clusters=5, random_state=42)
 y_kmeans = kmeans.fit_predict(X_scaled)
-kmedoids = KMedoids(n_clusters=4, random_state=42)
+kmedoids = KMedoids(n_clusters=5, random_state=42)
 y_kmedoids = kmedoids.fit_predict(X_scaled)
-birch = Birch(threshold=0.5, n_clusters=None)
+birch = Birch(threshold=0.5, n_clusters=5)
 birch.fit(X_scaled)
 
 # Model Evaluation using Silhouette Score
@@ -152,7 +152,7 @@ linkage_matrix = linkage(X_scaled, method='ward')
 
 # Plot dendrogram for BIRCH algorithm
 plt.figure(figsize=(10, 5))
-dendrogram(linkage_matrix, labels=birch.labels_)
+dendrogram(linkage_matrix, labels=birch.labels_, p=5, color_threshold=5)
 plt.title('Dendrogram for Birch Clustering')
 # X-axis represents the individual data points
 plt.xlabel('Data Points')
